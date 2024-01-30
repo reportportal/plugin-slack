@@ -1,0 +1,25 @@
+package com.epam.reportportal.extension.slack.model.enums.template;
+
+import com.epam.reportportal.extension.slack.model.domain.template.property.TemplateProperty;
+
+public enum DefaultTemplateProperty implements TemplateProperty {
+
+  LAUNCH_ID,
+  LAUNCH_UUID,
+  LAUNCH_NAME,
+  LAUNCH_NUMBER,
+  LAUNCH_START_TIME,
+  LAUNCH_FINISH_TIME,
+  LAUNCH_MODE,
+  LAUNCH_DESCRIPTION,
+  LAUNCH_ATTRIBUTES,
+
+  LAUNCH_LINK,
+
+  RESULT_COLOR;
+
+  @Override
+  public String getName() {
+    return name();
+  }
+}

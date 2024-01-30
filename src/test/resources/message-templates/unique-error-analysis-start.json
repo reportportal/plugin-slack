@@ -1,0 +1,31 @@
+{
+  "attachments": [
+    {
+      "color": "${RESULT_COLOR}",
+      "blocks": [
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*LAUNCH UNIQUE ERROR ANALYSIS STARTED:*\n<${LAUNCH_LINK}|${LAUNCH_NAME}#${LAUNCH_NUMBER}>"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*ID:*\n${LAUNCH_ID}"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*UUID:*\n${LAUNCH_UUID}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

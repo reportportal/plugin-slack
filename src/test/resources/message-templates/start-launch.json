@@ -1,0 +1,63 @@
+{
+  "attachments": [
+    {
+      "color": "${RESULT_COLOR}",
+      "blocks": [
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*LAUNCH STARTED:*\n<${LAUNCH_LINK}|${LAUNCH_NAME}#${LAUNCH_NUMBER}>"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Start time:*\n${LAUNCH_START_TIME}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*ID:*\n${LAUNCH_ID}"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*UUID:*\n${LAUNCH_UUID}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Mode*:\n${LAUNCH_MODE}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Description*:\n${LAUNCH_DESCRIPTION}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Attributes*:\n[${LAUNCH_ATTRIBUTES}]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
