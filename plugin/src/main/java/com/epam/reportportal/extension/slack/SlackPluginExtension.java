@@ -1,14 +1,14 @@
-package com.epam.reportportal.extension.template;
+package com.epam.reportportal.extension.slack;
 
 import com.epam.reportportal.extension.CommonPluginCommand;
 import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
 import com.epam.reportportal.extension.event.PluginEvent;
-import com.epam.reportportal.extension.template.command.TemplateCommand;
-import com.epam.reportportal.extension.template.event.plugin.PluginEventHandlerFactory;
-import com.epam.reportportal.extension.template.event.plugin.PluginEventListener;
-import com.epam.reportportal.extension.template.utils.MemoizingSupplier;
+import com.epam.reportportal.extension.slack.command.TemplateCommand;
+import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
+import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
+import com.epam.reportportal.extension.slack.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
 import com.epam.ta.reportportal.dao.LogRepository;
@@ -30,9 +30,9 @@ import java.util.function.Supplier;
  * @author Andrei Piankouski
  */
 @Extension
-public class TemplatePluginExtension implements ReportPortalExtensionPoint, DisposableBean {
+public class SlackPluginExtension implements ReportPortalExtensionPoint, DisposableBean {
 
-    private static final String PLUGIN_ID = "template";
+    private static final String PLUGIN_ID = "slack";
     public static final String BINARY_DATA_PROPERTIES_FILE_ID = "binary-data.properties";
 
     private final Supplier<Map<String, PluginCommand>> pluginCommandMapping = new MemoizingSupplier<>(this::getCommands);
@@ -55,7 +55,7 @@ public class TemplatePluginExtension implements ReportPortalExtensionPoint, Disp
     @Autowired
     private ApplicationContext applicationContext;
 
-    public TemplatePluginExtension(Map<String, Object> initParams) {
+    public SlackPluginExtension(Map<String, Object> initParams) {
         resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams).map(String::valueOf).orElse("");
 
         pluginLoadedListener = new MemoizingSupplier<>(() -> new PluginEventListener(PLUGIN_ID,

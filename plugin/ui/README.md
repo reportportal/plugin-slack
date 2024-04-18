@@ -1,4 +1,4 @@
-# Plugin template for Epam Report Portal
+# Plugin Slack for Epam Report Portal
 
 ## UI
 

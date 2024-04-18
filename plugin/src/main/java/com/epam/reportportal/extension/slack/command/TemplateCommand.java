@@ -1,4 +1,4 @@
-package com.epam.reportportal.extension.template.command;
+package com.epam.reportportal.extension.slack.command;
 
 import com.epam.reportportal.extension.PluginCommand;
 import com.epam.ta.reportportal.entity.integration.Integration;
