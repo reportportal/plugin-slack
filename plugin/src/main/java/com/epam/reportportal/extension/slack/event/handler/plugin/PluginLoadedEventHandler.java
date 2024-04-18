@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class PluginLoadedEventHandler implements EventHandler<PluginEvent> {
 			Integration integration = new Integration();
 			integration.setName(name);
 			integration.setType(integrationType);
-			integration.setCreationDate(LocalDateTime.now());
+			integration.setCreationDate(Instant.now());
 			integration.setEnabled(true);
 			integration.setCreator("SYSTEM");
 			integration.setParams(new IntegrationParams(new HashMap<>()));
