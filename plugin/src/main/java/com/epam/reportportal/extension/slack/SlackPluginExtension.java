@@ -12,6 +12,12 @@ import com.epam.reportportal.extension.slack.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
 import com.epam.ta.reportportal.dao.LogRepository;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -25,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 /**
  * @author Andrei Piankouski
@@ -32,8 +40,10 @@ import java.util.function.Supplier;
 @Extension
 public class SlackPluginExtension implements ReportPortalExtensionPoint, DisposableBean {
 
-    private static final String PLUGIN_ID = "slack";
+    private static final String PLUGIN_ID = "Slack";
     public static final String BINARY_DATA_PROPERTIES_FILE_ID = "binary-data.properties";
+
+    public static final String SCRIPTS_DIR = "scripts";
 
     private final Supplier<Map<String, PluginCommand>> pluginCommandMapping = new MemoizingSupplier<>(this::getCommands);
 
@@ -55,6 +65,9 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private DataSource dataSource;
+
     public SlackPluginExtension(Map<String, Object> initParams) {
         resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams).map(String::valueOf).orElse("");
 
@@ -64,8 +77,9 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     }
 
     @PostConstruct
-    public void createIntegration() {
+    public void createIntegration() throws IOException {
         initListeners();
+        initScripts();
     }
 
     private void initListeners() {
@@ -73,6 +87,16 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
                 ApplicationEventMulticaster.class
         );
         applicationEventMulticaster.addApplicationListener(pluginLoadedListener.get());
+    }
+
+    private void initScripts() throws IOException {
+        try (Stream<Path> paths = Files.list(Paths.get(resourcesDir, SCRIPTS_DIR))) {
+            FileSystemResource[] scriptResources =
+                paths.sorted().map(FileSystemResource::new).toArray(FileSystemResource[]::new);
+            ResourceDatabasePopulator resourceDatabasePopulator =
+                new ResourceDatabasePopulator(scriptResources);
+            resourceDatabasePopulator.execute(dataSource);
+        }
     }
 
     @Override
