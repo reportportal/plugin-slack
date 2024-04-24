@@ -4,6 +4,7 @@ import com.epam.reportportal.extension.event.PluginEvent;
 import com.epam.reportportal.extension.slack.event.EventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.handler.EventHandler;
 import com.epam.reportportal.extension.slack.event.handler.plugin.PluginLoadedEventHandler;
+import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
 import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
 
@@ -19,12 +20,13 @@ public class PluginEventHandlerFactory implements EventHandlerFactory<PluginEven
 
 	private final Map<String, EventHandler<PluginEvent>> eventHandlerMapping;
 
-	public PluginEventHandlerFactory(String resourcesDir, IntegrationTypeRepository integrationTypeRepository,
-			IntegrationRepository integrationRepository) {
+	public PluginEventHandlerFactory(IntegrationTypeRepository integrationTypeRepository,
+			IntegrationRepository integrationRepository, PluginInfoProvider pluginInfoProvider) {
 		this.eventHandlerMapping = new HashMap<>();
-		this.eventHandlerMapping.put(LOAD_KEY,
-				new PluginLoadedEventHandler(resourcesDir, integrationTypeRepository, integrationRepository)
-		);
+    this.eventHandlerMapping.put(LOAD_KEY,
+        new PluginLoadedEventHandler(integrationTypeRepository, integrationRepository,
+            pluginInfoProvider)
+    );
 	}
 
 	@Override

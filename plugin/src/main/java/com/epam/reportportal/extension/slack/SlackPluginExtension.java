@@ -8,6 +8,7 @@ import com.epam.reportportal.extension.event.PluginEvent;
 import com.epam.reportportal.extension.slack.command.TemplateCommand;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
+import com.epam.reportportal.extension.slack.info.impl.PluginInfoProviderImpl;
 import com.epam.reportportal.extension.slack.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
@@ -71,9 +72,13 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     public SlackPluginExtension(Map<String, Object> initParams) {
         resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams).map(String::valueOf).orElse("");
 
-        pluginLoadedListener = new MemoizingSupplier<>(() -> new PluginEventListener(PLUGIN_ID,
-                new PluginEventHandlerFactory(resourcesDir, integrationTypeRepository, integrationRepository)
-        ));
+        pluginLoadedListener = new MemoizingSupplier<>(
+            () -> new PluginEventListener(PLUGIN_ID,
+                new PluginEventHandlerFactory(integrationTypeRepository,
+                    integrationRepository,
+                    new PluginInfoProviderImpl(resourcesDir, BINARY_DATA_PROPERTIES_FILE_ID)
+                )
+            ));
     }
 
     @PostConstruct
