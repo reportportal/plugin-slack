@@ -5,7 +5,7 @@ import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
 import com.epam.reportportal.extension.event.PluginEvent;
-import com.epam.reportportal.extension.slack.command.TemplateCommand;
+import com.epam.reportportal.extension.slack.command.FieldsInfoCommand;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
 import com.epam.reportportal.extension.slack.info.impl.PluginInfoProviderImpl;
@@ -136,7 +136,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     private Map<String, PluginCommand> getCommands() {
         HashMap<String, PluginCommand> pluginCommands = new HashMap<>();
-        TemplateCommand templatePlugin = new TemplateCommand();
+        FieldsInfoCommand templatePlugin = new FieldsInfoCommand();
         pluginCommands.put(templatePlugin.getName(), templatePlugin);
         return pluginCommands;
     }
