@@ -5,6 +5,7 @@ import static java.util.Optional.ofNullable;
 import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
 import com.epam.reportportal.rules.exception.ErrorType;
 import com.epam.reportportal.rules.exception.ReportPortalException;
+import com.epam.ta.reportportal.entity.enums.IntegrationGroupEnum;
 import com.epam.ta.reportportal.entity.integration.IntegrationType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
 
 	@Override
 	public IntegrationType provide(IntegrationType integrationType) {
+		integrationType.setIntegrationGroup(IntegrationGroupEnum.NOTIFICATION);
 		loadBinaryDataInfo(integrationType);
 		updateDescription(integrationType);
 		updateMetadata(integrationType);
