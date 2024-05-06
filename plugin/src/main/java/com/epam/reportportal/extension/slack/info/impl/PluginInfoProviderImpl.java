@@ -3,13 +3,10 @@ package com.epam.reportportal.extension.slack.info.impl;
 import static java.util.Optional.ofNullable;
 
 import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
-import com.epam.reportportal.extension.slack.models.RuleField;
-import com.epam.reportportal.extension.slack.models.Validation;
 import com.epam.reportportal.rules.exception.ErrorType;
 import com.epam.reportportal.rules.exception.ReportPortalException;
 import com.epam.ta.reportportal.entity.enums.IntegrationGroupEnum;
 import com.epam.ta.reportportal.entity.integration.IntegrationType;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
