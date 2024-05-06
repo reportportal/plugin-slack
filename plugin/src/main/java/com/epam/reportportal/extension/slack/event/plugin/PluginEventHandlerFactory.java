@@ -16,21 +16,20 @@ import java.util.Map;
  */
 public class PluginEventHandlerFactory implements EventHandlerFactory<PluginEvent> {
 
-	public static final String LOAD_KEY = "load";
+  public static final String LOAD_KEY = "load";
 
-	private final Map<String, EventHandler<PluginEvent>> eventHandlerMapping;
+  private final Map<String, EventHandler<PluginEvent>> eventHandlerMapping;
 
-	public PluginEventHandlerFactory(IntegrationTypeRepository integrationTypeRepository,
-			IntegrationRepository integrationRepository, PluginInfoProvider pluginInfoProvider) {
-		this.eventHandlerMapping = new HashMap<>();
+  public PluginEventHandlerFactory(IntegrationTypeRepository integrationTypeRepository,
+       PluginInfoProvider pluginInfoProvider) {
+    this.eventHandlerMapping = new HashMap<>();
     this.eventHandlerMapping.put(LOAD_KEY,
-        new PluginLoadedEventHandler(integrationTypeRepository, integrationRepository,
-            pluginInfoProvider)
+        new PluginLoadedEventHandler(integrationTypeRepository, pluginInfoProvider)
     );
-	}
+  }
 
-	@Override
-	public EventHandler<PluginEvent> getEventHandler(String key) {
-		return eventHandlerMapping.get(key);
-	}
+  @Override
+  public EventHandler<PluginEvent> getEventHandler(String key) {
+    return eventHandlerMapping.get(key);
+  }
 }

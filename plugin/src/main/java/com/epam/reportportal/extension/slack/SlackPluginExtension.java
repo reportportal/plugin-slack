@@ -5,7 +5,6 @@ import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
 import com.epam.reportportal.extension.event.PluginEvent;
-import com.epam.reportportal.extension.slack.command.FieldsInfoCommand;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
 import com.epam.reportportal.extension.slack.info.impl.PluginInfoProviderImpl;
@@ -44,6 +43,10 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     private static final String PLUGIN_ID = "Slack";
     public static final String BINARY_DATA_PROPERTIES_FILE_ID = "binary-data.properties";
 
+    private static final String DOCUMENTATION_LINK_FIELD = "documentationLink";
+
+    private static final String DOCUMENTATION_LINK = "https://reportportal.io/docs/plugins/Slack";
+
     public static final String SCRIPTS_DIR = "scripts";
 
     private final Supplier<Map<String, PluginCommand>> pluginCommandMapping = new MemoizingSupplier<>(this::getCommands);
@@ -75,7 +78,6 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
         pluginLoadedListener = new MemoizingSupplier<>(
             () -> new PluginEventListener(PLUGIN_ID,
                 new PluginEventHandlerFactory(integrationTypeRepository,
-                    integrationRepository,
                     new PluginInfoProviderImpl(resourcesDir, BINARY_DATA_PROPERTIES_FILE_ID)
                 )
             ));
@@ -120,6 +122,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     public Map<String, ?> getPluginParams() {
         Map<String, Object> params = new HashMap<>();
         params.put(ALLOWED_COMMANDS, new ArrayList<>(pluginCommandMapping.get().keySet()));
+        params.put(DOCUMENTATION_LINK_FIELD, DOCUMENTATION_LINK);
         params.put(COMMON_COMMANDS, new ArrayList<>(commonPluginCommandMapping.get().keySet()));
         return params;
     }
@@ -136,8 +139,6 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     private Map<String, PluginCommand> getCommands() {
         HashMap<String, PluginCommand> pluginCommands = new HashMap<>();
-        FieldsInfoCommand templatePlugin = new FieldsInfoCommand();
-        pluginCommands.put(templatePlugin.getName(), templatePlugin);
         return pluginCommands;
     }
 
