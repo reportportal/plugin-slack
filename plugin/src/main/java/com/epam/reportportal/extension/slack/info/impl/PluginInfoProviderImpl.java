@@ -88,6 +88,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
     ruleField.put("label", "WebhookURL");
     ruleField.put("type", "text");
     ruleField.put("default", "https//...");
+		ruleField.put("required", true);
     Map<String, Object> validation = new HashMap<>();
     validation.put("type", "url");
     validation.put("errorMessage", "Field is Required. Please provide valid ...");
