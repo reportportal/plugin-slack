@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -85,9 +86,15 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
 
   private void addFieldsInfo(IntegrationType integrationType) {
     Map<String, Object> details = integrationType.getDetails().getDetails();
-    RuleField ruleField = new RuleField("WebhookURL", "WebhookURL", "", "test",
-        "https//...", new Validation("url", "Field is Required. Please provide valid ..."));
-    Gson gson = new Gson();
-    details.put(FIELDS_KEY, gson.toJson(ruleField));
+    Map<String, Object> ruleField = new HashMap<>();
+    ruleField.put("name", "WebhookURL");
+    ruleField.put("label", "WebhookURL");
+    ruleField.put("type", "text");
+    ruleField.put("default", "https//...");
+    Map<String, Object> validation = new HashMap<>();
+    validation.put("type", "url");
+    validation.put("errorMessage", "Field is Required. Please provide valid ...");
+    ruleField.put("validation", validation);
+    details.put(FIELDS_KEY, List.of(ruleField));
   }
 }
