@@ -29,6 +29,10 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
       "Reinforce your ReportPortal instance with Slack integration. Be informed about test result finish in real time in your Slack channel.";
   public static final Map<String, Object> PLUGIN_METADATA = new HashMap<>();
 
+  static {
+    PLUGIN_METADATA.put("isIntegrationAllowed", false);
+  }
+
   private final String resourcesDir;
   private final String propertyFile;
 
