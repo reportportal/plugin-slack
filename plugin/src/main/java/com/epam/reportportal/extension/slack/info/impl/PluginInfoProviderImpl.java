@@ -29,7 +29,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
   public static final Map<String, Object> PLUGIN_METADATA = new HashMap<>();
 
   static {
-    PLUGIN_METADATA.put("isIntegrationAllowed", false);
+    PLUGIN_METADATA.put("isIntegrationsAllowed", false);
   }
 
   private final String resourcesDir;
