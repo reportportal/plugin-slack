@@ -9,6 +9,7 @@ import com.epam.reportportal.rules.exception.ErrorType;
 import com.epam.reportportal.rules.exception.ReportPortalException;
 import com.epam.ta.reportportal.entity.enums.IntegrationGroupEnum;
 import com.epam.ta.reportportal.entity.integration.IntegrationType;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -86,6 +87,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
     Map<String, Object> details = integrationType.getDetails().getDetails();
     RuleField ruleField = new RuleField("WebhookURL", "WebhookURL", "", "test",
         "https//...", new Validation("url", "Field is Required. Please provide valid ..."));
-    details.put(FIELDS_KEY, ruleField);
+    Gson gson = new Gson();
+    details.put(FIELDS_KEY, gson.toJson(ruleField));
   }
 }
