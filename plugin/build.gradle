@@ -1,3 +1,5 @@
+import com.github.spotbugs.SpotBugsTask
+
 plugins {
     id "io.spring.dependency-management" version "1.0.9.RELEASE"
     id 'java'
@@ -44,6 +46,17 @@ dependencies {
         annotationProcessor 'com.github.reportportal:plugin-api:3ecb915657'
     }
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'
+}
+
+spotbugs {
+    sourceSets = [sourceSets.main]
+    reportLevel = "high"
+}
+tasks.withType(SpotBugsTask) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
 }
 
 test {
