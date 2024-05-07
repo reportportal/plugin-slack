@@ -22,10 +22,15 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
   private static final String DESCRIPTION_KEY = "description";
 
   private static final String FIELDS_KEY = "ruleFields";
+
+  private static final String RULE_DESCRIPTION_KEY = "ruleDescription";
   private static final String METADATA_KEY = "metadata";
 
   private static final String PLUGIN_DESCRIPTION =
       "Reinforce your ReportPortal instance with Slack integration. Be informed about test result finish in real time in your Slack channel.";
+
+  private static final String RULE_DESCRIPTION =
+      "Select Slack channel for every rule to send launch related notifications";
   public static final Map<String, Object> PLUGIN_METADATA = new HashMap<>();
 
   static {
@@ -47,6 +52,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
     updateDescription(integrationType);
     updateMetadata(integrationType);
     addFieldsInfo(integrationType);
+    addRuleDescriptionInfo(integrationType);
     return integrationType;
   }
 
@@ -79,6 +85,11 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
   private void updateMetadata(IntegrationType integrationType) {
     Map<String, Object> details = integrationType.getDetails().getDetails();
     details.put(METADATA_KEY, PLUGIN_METADATA);
+  }
+
+  private void addRuleDescriptionInfo(IntegrationType integrationType) {
+    Map<String, Object> details = integrationType.getDetails().getDetails();
+    details.put(RULE_DESCRIPTION_KEY, RULE_DESCRIPTION);
   }
 
   private void addFieldsInfo(IntegrationType integrationType) {
