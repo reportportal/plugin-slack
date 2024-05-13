@@ -95,14 +95,14 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
   private void addFieldsInfo(IntegrationType integrationType) {
     Map<String, Object> details = integrationType.getDetails().getDetails();
     Map<String, Object> ruleField = new HashMap<>();
-    ruleField.put("name", "WebhookURL");
-    ruleField.put("label", "WebhookURL");
+    ruleField.put("name", "webhookURL");
+    ruleField.put("label", "Webhook URL");
     ruleField.put("type", "text");
-    ruleField.put("default", "https//...");
+    ruleField.put("placeholder", "https//...");
 		ruleField.put("required", true);
     Map<String, Object> validation = new HashMap<>();
     validation.put("type", "url");
-    validation.put("errorMessage", "Field is Required. Please provide valid ...");
+    validation.put("errorMessage", "Field is Required. Please provide valid URL");
     ruleField.put("validation", validation);
     details.put(FIELDS_KEY, List.of(ruleField));
   }
