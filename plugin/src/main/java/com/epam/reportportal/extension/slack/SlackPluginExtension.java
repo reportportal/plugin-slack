@@ -4,14 +4,18 @@ import com.epam.reportportal.extension.CommonPluginCommand;
 import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
+import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
 import com.epam.reportportal.extension.event.PluginEvent;
+import com.epam.reportportal.extension.slack.event.launch.SlackLaunchFinishEventListener;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
 import com.epam.reportportal.extension.slack.info.impl.PluginInfoProviderImpl;
 import com.epam.reportportal.extension.slack.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
+import com.epam.ta.reportportal.dao.LaunchRepository;
 import com.epam.ta.reportportal.dao.LogRepository;
+import com.epam.ta.reportportal.dao.ProjectRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,6 +61,8 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     private final Supplier<ApplicationListener<PluginEvent>> pluginLoadedListener;
 
+    private final Supplier<ApplicationListener<LaunchFinishedPluginEvent>> launchFinishEventListenerSupplier;
+
     @Autowired
     private IntegrationTypeRepository integrationTypeRepository;
 
@@ -65,6 +71,12 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     @Autowired
     private LogRepository logRepository;
+
+    @Autowired
+    private LaunchRepository launchRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -81,6 +93,9 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
                     new PluginInfoProviderImpl(resourcesDir, BINARY_DATA_PROPERTIES_FILE_ID)
                 )
             ));
+
+        launchFinishEventListenerSupplier = new MemoizingSupplier<>(
+            () -> new SlackLaunchFinishEventListener(projectRepository, launchRepository));
     }
 
     @PostConstruct
@@ -94,6 +109,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
                 ApplicationEventMulticaster.class
         );
         applicationEventMulticaster.addApplicationListener(pluginLoadedListener.get());
+        applicationEventMulticaster.addApplicationListener(launchFinishEventListenerSupplier.get());
     }
 
     private void initScripts() throws IOException {
@@ -116,6 +132,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
                 ApplicationEventMulticaster.class
         );
         applicationEventMulticaster.removeApplicationListener(pluginLoadedListener.get());
+        applicationEventMulticaster.removeApplicationListener(launchFinishEventListenerSupplier.get());
     }
 
     @Override

@@ -45,6 +45,10 @@ dependencies {
         implementation 'com.github.reportportal:plugin-api:3ecb915657'
         annotationProcessor 'com.github.reportportal:plugin-api:3ecb915657'
     }
+
+    implementation("com.slack.api:slack-api-client:1.27.1") {
+        exclude group: "org.slf4j"
+    }
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'
 }
 
