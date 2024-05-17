@@ -6,6 +6,7 @@ import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
 import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
 import com.epam.reportportal.extension.event.PluginEvent;
+import com.epam.reportportal.extension.slack.client.SlackClient;
 import com.epam.reportportal.extension.slack.event.launch.SlackLaunchFinishEventListener;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.plugin.PluginEventListener;
@@ -16,6 +17,7 @@ import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
 import com.epam.ta.reportportal.dao.LaunchRepository;
 import com.epam.ta.reportportal.dao.LogRepository;
 import com.epam.ta.reportportal.dao.ProjectRepository;
+import com.slack.api.Slack;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,6 +65,8 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     private final Supplier<ApplicationListener<LaunchFinishedPluginEvent>> launchFinishEventListenerSupplier;
 
+    private final Supplier<SlackClient> slackClientSupplier;
+
     @Autowired
     private IntegrationTypeRepository integrationTypeRepository;
 
@@ -94,8 +98,11 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
                 )
             ));
 
+        slackClientSupplier = new MemoizingSupplier<>(() -> new SlackClient(Slack.getInstance()));
+
         launchFinishEventListenerSupplier = new MemoizingSupplier<>(
-            () -> new SlackLaunchFinishEventListener(projectRepository, launchRepository));
+            () -> new SlackLaunchFinishEventListener(slackClientSupplier.get(), projectRepository,
+                launchRepository));
     }
 
     @PostConstruct
@@ -125,6 +132,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     @Override
     public void destroy() {
         removeListeners();
+        slackClientSupplier.get().close();
     }
 
     private void removeListeners() {

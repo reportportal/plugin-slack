@@ -16,6 +16,7 @@
 package com.epam.reportportal.extension.slack.event.launch;
 
 import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
+import com.epam.reportportal.extension.slack.client.SlackClient;
 import com.epam.reportportal.extension.slack.event.handler.launch.LaunchEventHandler;
 import com.epam.ta.reportportal.dao.LaunchRepository;
 import com.epam.ta.reportportal.dao.ProjectRepository;
@@ -37,8 +38,11 @@ public class SlackLaunchFinishEventListener implements
 
   private final LaunchRepository launchRepository;
 
-  public SlackLaunchFinishEventListener(
+  private final SlackClient slackClient;
+
+  public SlackLaunchFinishEventListener(SlackClient slackClient,
       ProjectRepository projectRepository, LaunchRepository launchRepository) {
+    this.slackClient = slackClient;
     this.projectRepository = projectRepository;
     this.launchRepository = launchRepository;
   }
@@ -49,7 +53,7 @@ public class SlackLaunchFinishEventListener implements
         .orElseThrow(() -> new RuntimeException("Project not found"));
     Launch launch = launchRepository.findById(event.getSource())
         .orElseThrow(() -> new RuntimeException("Launch not found"));
-    Slack slack = Slack.getInstance();
+    Slack slack = slackClient.getSlack();
     String webhookUrl = System.getenv("https://hooks.slack.com/services/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");
     Payload payload = Payload.builder().text("Launch: " + launch.getId() + "in project: " + project.getId() + "was finished").build();
     try {
