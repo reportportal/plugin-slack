@@ -1,0 +1,172 @@
+{
+  "attachments": [
+    {
+      "color": "${RESULT_COLOR}",
+      "blocks": [
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*LAUNCH FINISHED:*\n<${LAUNCH_LINK}|${LAUNCH_NAME}#${LAUNCH_NUMBER}>"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Start time:*\n${LAUNCH_START_TIME}"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Finish time:*\n${LAUNCH_FINISH_TIME}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*ID:*\n${LAUNCH_ID}"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*UUID:*\n${LAUNCH_UUID}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Description*:\n${LAUNCH_DESCRIPTION}"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Attributes*:\n[${LAUNCH_ATTRIBUTES}]"
+            }
+          ]
+        },
+        {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "Execution Statistics:\n"
+                }
+              ]
+            },
+            {
+              "type": "rich_text_quote",
+              "elements": [
+                {
+                  "type": "emoji",
+                  "name": "black_square"
+                },
+                {
+                  "type": "text",
+                  "text": " TOTAL:\t${statistics$executions$total}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "large_green_square"
+                },
+                {
+                  "type": "text",
+                  "text": " PASSED:\t${statistics$executions$passed}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "large_red_square"
+                },
+                {
+                  "type": "text",
+                  "text": " FAILED:\t${statistics$executions$failed}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "white_square"
+                },
+                {
+                  "type": "text",
+                  "text": " SKIPPED:\t${statistics$executions$skipped}\n"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rich_text",
+          "elements": [
+            {
+              "type": "rich_text_section",
+              "elements": [
+                {
+                  "type": "text",
+                  "text": "Defect Statistics:\n"
+                }
+              ]
+            },
+            {
+              "type": "rich_text_quote",
+              "elements": [
+                {
+                  "type": "emoji",
+                  "name": "large_red_square"
+                },
+                {
+                  "type": "text",
+                  "text": " PRODUCT_BUG:\t\t${statistics$defects$product_bug$total}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "large_yellow_square"
+                },
+                {
+                  "type": "text",
+                  "text": " AUTOMATION_BUG:\t${statistics$defects$automation_bug$total}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "large_blue_square"
+                },
+                {
+                  "type": "text",
+                  "text": " SISTEM_ISSUE:\t\t${statistics$defects$system_issue$total}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "white_square"
+                },
+                {
+                  "type": "text",
+                  "text": " NO_DEFECT:\t\t\t${statistics$defects$no_defect$total}\n"
+                },
+                {
+                  "type": "emoji",
+                  "name": "large_orange_square"
+                },
+                {
+                  "type": "text",
+                  "text": " TO_INVESTIGATE:\t\t${statistics$defects$to_investigate$total}\n"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

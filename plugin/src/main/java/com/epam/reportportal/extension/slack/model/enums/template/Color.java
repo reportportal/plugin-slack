@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.epam.reportportal.extension.slack.event.handler.launch;
-
-import com.epam.reportportal.extension.event.LaunchEvent;
-import com.epam.reportportal.extension.slack.event.handler.EventHandler;
+package com.epam.reportportal.extension.slack.model.enums.template;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
  */
-public class LaunchEventHandler<T extends LaunchEvent<Long>> implements EventHandler<T> {
+public enum Color {
 
-  @Override
-  public void handle(T event) {
+  PASSED("#008000"),
+  FAILED("#FF0000");
 
+  private final String value;
+
+  Color(String value) {
+    this.value = value;
   }
+
+  public String getValue() {
+    return value;
+  }
+
 }

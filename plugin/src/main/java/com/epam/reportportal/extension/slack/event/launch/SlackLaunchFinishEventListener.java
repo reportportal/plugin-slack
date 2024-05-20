@@ -16,16 +16,21 @@
 package com.epam.reportportal.extension.slack.event.launch;
 
 import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
-import com.epam.reportportal.extension.slack.client.SlackClient;
-import com.epam.reportportal.extension.slack.event.handler.launch.LaunchEventHandler;
+import com.epam.reportportal.extension.slack.event.launch.resolver.AttachmentResolver;
+import com.epam.reportportal.extension.slack.event.launch.resolver.SenderCaseMatcher;
+import com.epam.reportportal.rules.exception.ErrorType;
+import com.epam.reportportal.rules.exception.ReportPortalException;
 import com.epam.ta.reportportal.dao.LaunchRepository;
 import com.epam.ta.reportportal.dao.ProjectRepository;
+import com.epam.ta.reportportal.entity.enums.ProjectAttributeEnum;
 import com.epam.ta.reportportal.entity.launch.Launch;
 import com.epam.ta.reportportal.entity.project.Project;
+import com.epam.ta.reportportal.entity.project.ProjectUtils;
+import com.epam.ta.reportportal.entity.project.email.SenderCase;
 import com.slack.api.Slack;
-import com.slack.api.webhook.Payload;
-import com.slack.api.webhook.WebhookResponse;
-import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -34,34 +39,96 @@ import org.springframework.context.ApplicationListener;
 public class SlackLaunchFinishEventListener implements
     ApplicationListener<LaunchFinishedPluginEvent> {
 
+  private final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
+
+  private final static String WEBHOOK_DETAILS = "WebhookURL";
+
+  private final static String PLUGIN_NOTIFICATION_TYPE = "Slack";
+
   private final ProjectRepository projectRepository;
 
   private final LaunchRepository launchRepository;
 
-  private final SlackClient slackClient;
+  private final SenderCaseMatcher senderCaseMatcher;
 
-  public SlackLaunchFinishEventListener(SlackClient slackClient,
-      ProjectRepository projectRepository, LaunchRepository launchRepository) {
-    this.slackClient = slackClient;
+  private final AttachmentResolver attachmentResolver;
+
+
+  public SlackLaunchFinishEventListener(
+      ProjectRepository projectRepository, LaunchRepository launchRepository,
+      SenderCaseMatcher senderCaseMatcher, AttachmentResolver attachmentResolver) {
     this.projectRepository = projectRepository;
     this.launchRepository = launchRepository;
+    this.senderCaseMatcher = senderCaseMatcher;
+    this.attachmentResolver = attachmentResolver;
   }
 
   @Override
   public void onApplicationEvent(LaunchFinishedPluginEvent event) {
-    Project project = projectRepository.findById(event.getProjectId())
-        .orElseThrow(() -> new RuntimeException("Project not found"));
-    Launch launch = launchRepository.findById(event.getSource())
-        .orElseThrow(() -> new RuntimeException("Launch not found"));
-    Slack slack = slackClient.getSlack();
-    String webhookUrl = System.getenv("https://hooks.slack.com/services/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");
-    Payload payload = Payload.builder().text("Launch: " + launch.getId() + "in project: " + project.getId() + "was finished").build();
-    try {
-      WebhookResponse response = slack.send(webhookUrl, payload);
-      System.out.println(response);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    Project project = getProject(event.getProjectId());
+    if (isNotificationsEnabled(project)) {
+      Launch launch = getLaunch(event.getSource());
+      processSenderCases(project, launch, event.getLaunchLink());
     }
   }
 
+  private Project getProject(Long projectId) {
+    return projectRepository.findById(projectId)
+        .orElseThrow(() -> new ReportPortalException(ErrorType.PROJECT_NOT_FOUND, projectId));
+  }
+
+  private Launch getLaunch(Long launchId) {
+    return launchRepository.findById(launchId)
+        .orElseThrow(() -> new ReportPortalException(ErrorType.LAUNCH_NOT_FOUND, launchId));
+  }
+
+  private void processSenderCases(Project project, Launch launch, String launchLink) {
+    project.getSenderCases().stream()
+        .filter(SenderCase::isEnabled)
+        .filter(this::isSlackSenderCase)
+        .forEach(senderCase -> processSenderCase(senderCase, launch, launchLink));
+  }
+
+  private boolean isSlackSenderCase(SenderCase senderCase) {
+    return senderCase.getType().equals(PLUGIN_NOTIFICATION_TYPE);
+  }
+
+  private void processSenderCase(SenderCase senderCase, Launch launch, String launchLink) {
+    if (senderCaseMatcher.isSenderCaseMatched(senderCase, launch)) {
+      sendNotification(senderCase, launch, launchLink);
+    }
+  }
+
+  private void sendNotification(SenderCase senderCase, Launch launch, String launchLink) {
+    Optional<String> webhookUrl = getWebhookUrl(senderCase);
+    Optional<String> attachment = resolveAttachment(launch, launchLink);
+    if (webhookUrl.isPresent() && attachment.isPresent()) {
+      sendSlackNotification(webhookUrl.get(), attachment.get());
+    }
+  }
+
+  private Optional<String> getWebhookUrl(SenderCase senderCase) {
+    return Optional.ofNullable(
+        (String) senderCase.getRuleDetails().getOptions().get(WEBHOOK_DETAILS));
+  }
+
+  private Optional<String> resolveAttachment(Launch launch, String launchLink) {
+    return attachmentResolver.resolve(launch, launchLink);
+  }
+
+  private void sendSlackNotification(String webhookUrl, String attachment) {
+    try (Slack slack = Slack.getInstance()) {
+      slack.send(webhookUrl, attachment);
+    } catch (Exception e) {
+      throw new ReportPortalException("Failed to send Slack notification", e);
+    }
+  }
+
+  private boolean isNotificationsEnabled(Project project) {
+    Map<String, String> projectConfig = ProjectUtils.getConfigParameters(
+        project.getProjectAttributes());
+    return BooleanUtils.toBoolean(
+        projectConfig.get(ProjectAttributeEnum.NOTIFICATIONS_ENABLED.getAttribute()))
+        && BooleanUtils.toBoolean(projectConfig.get(SLACK_NOTIFICATION_ATTRIBUTE));
+  }
 }
