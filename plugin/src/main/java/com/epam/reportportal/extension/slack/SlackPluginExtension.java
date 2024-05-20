@@ -24,6 +24,7 @@ import com.epam.ta.reportportal.dao.TestItemRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
@@ -207,6 +208,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     om.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
     om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     om.registerModule(new JavaTimeModule());
+    om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     return om;
   }
 }
