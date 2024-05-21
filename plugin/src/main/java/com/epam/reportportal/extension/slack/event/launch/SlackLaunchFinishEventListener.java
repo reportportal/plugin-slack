@@ -31,6 +31,8 @@ import com.slack.api.Slack;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -39,9 +41,11 @@ import org.springframework.context.ApplicationListener;
 public class SlackLaunchFinishEventListener implements
     ApplicationListener<LaunchFinishedPluginEvent> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SlackLaunchFinishEventListener.class);
+
   private final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
 
-  private final static String WEBHOOK_DETAILS = "WebhookURL";
+  private final static String WEBHOOK_DETAILS = "webhookURL";
 
   private final static String PLUGIN_NOTIFICATION_TYPE = "Slack";
 
@@ -65,10 +69,11 @@ public class SlackLaunchFinishEventListener implements
 
   @Override
   public void onApplicationEvent(LaunchFinishedPluginEvent event) {
-    System.out.println("LaunchFinishedPluginEvent handled");
+    LOGGER.info("LaunchFinishedPluginEvent handled");
     Project project = getProject(event.getProjectId());
+    LOGGER.info("ProjectID handled: " + project.getId());
     boolean notificationsEnabled = isNotificationsEnabled(project);
-    System.out.println("Notifications enabled " + notificationsEnabled);
+    LOGGER.debug("Notifications enabled " + notificationsEnabled);
     if (notificationsEnabled) {
       Launch launch = getLaunch(event.getSource());
       processSenderCases(project, launch, event.getLaunchLink());
@@ -87,6 +92,7 @@ public class SlackLaunchFinishEventListener implements
 
   private void processSenderCases(Project project, Launch launch, String launchLink) {
     project.getSenderCases().stream()
+        .peek(senderCase -> LOGGER.debug("Sender case " + senderCase))
         .filter(SenderCase::isEnabled)
         .filter(this::isSlackSenderCase)
         .forEach(senderCase -> processSenderCase(senderCase, launch, launchLink));
@@ -98,7 +104,7 @@ public class SlackLaunchFinishEventListener implements
 
   private void processSenderCase(SenderCase senderCase, Launch launch, String launchLink) {
     if (senderCaseMatcher.isSenderCaseMatched(senderCase, launch)) {
-      System.out.println("Sender case matched");
+      LOGGER.debug("Sender case matched");
       sendNotification(senderCase, launch, launchLink);
     }
   }
@@ -107,8 +113,8 @@ public class SlackLaunchFinishEventListener implements
     Optional<String> webhookUrl = getWebhookUrl(senderCase);
     Optional<String> attachment = resolveAttachment(launch, launchLink);
     if (webhookUrl.isPresent() && attachment.isPresent()) {
-      System.out.println("Webhook URL and attachment are present " + webhookUrl);
-      System.out.println("Attachment is present " + attachment);
+      LOGGER.debug("Webhook URL and attachment are present " + webhookUrl);
+      LOGGER.debug("Attachment is present " + attachment);
       sendSlackNotification(webhookUrl.get(), attachment.get());
     }
   }
@@ -124,7 +130,7 @@ public class SlackLaunchFinishEventListener implements
 
   private void sendSlackNotification(String webhookUrl, String attachment) {
     try (Slack slack = Slack.getInstance()) {
-      System.out.println("Sending Slack notification " + webhookUrl + attachment);
+      LOGGER.debug("Sending Slack notification " + webhookUrl + attachment);
       slack.send(webhookUrl, attachment);
     } catch (Exception e) {
       throw new ReportPortalException("Failed to send Slack notification", e);

@@ -20,6 +20,7 @@ import static java.util.Optional.ofNullable;
 import com.epam.reportportal.extension.slack.binary.JsonObjectLoader;
 import com.epam.reportportal.extension.slack.binary.MessageTemplateStore;
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
+import com.epam.reportportal.extension.slack.event.launch.SlackLaunchFinishEventListener;
 import com.epam.reportportal.extension.slack.factory.PropertyCollectorFactory;
 import com.epam.reportportal.extension.slack.model.enums.SlackEventType;
 import com.epam.reportportal.extension.slack.model.template.TemplateProperty;
@@ -30,11 +31,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
  */
 public class AttachmentResolver {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentResolver.class);
 
   private static final String LAUNCH_LINK = "LAUNCH_LINK";
 
@@ -53,7 +58,7 @@ public class AttachmentResolver {
   }
 
   public Optional<String> resolve(Launch launch, String launchLink) {
-    System.out.println("Resolve attachments");
+    LOGGER.info("Resolve attachments");
     return messageTemplateStore.get(SlackEventType.LAUNCH_FINISHED)
         .flatMap(file -> jsonObjectLoader.load(file, JsonNode.class))
         .map(JsonNode::toString)
