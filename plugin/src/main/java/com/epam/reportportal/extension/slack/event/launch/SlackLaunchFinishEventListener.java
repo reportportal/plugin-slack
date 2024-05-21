@@ -41,7 +41,7 @@ public class SlackLaunchFinishEventListener implements
 
   private final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
 
-  private final static String WEBHOOK_DETAILS = "WebhookURL";
+  private final static String WEBHOOK_DETAILS = "webhookURL";
 
   private final static String PLUGIN_NOTIFICATION_TYPE = "Slack";
 
