@@ -65,8 +65,11 @@ public class SlackLaunchFinishEventListener implements
 
   @Override
   public void onApplicationEvent(LaunchFinishedPluginEvent event) {
+    System.out.println("LaunchFinishedPluginEvent handled");
     Project project = getProject(event.getProjectId());
-    if (isNotificationsEnabled(project)) {
+    boolean notificationsEnabled = isNotificationsEnabled(project);
+    System.out.println("Notifications enabled " + notificationsEnabled);
+    if (notificationsEnabled) {
       Launch launch = getLaunch(event.getSource());
       processSenderCases(project, launch, event.getLaunchLink());
     }
@@ -95,6 +98,7 @@ public class SlackLaunchFinishEventListener implements
 
   private void processSenderCase(SenderCase senderCase, Launch launch, String launchLink) {
     if (senderCaseMatcher.isSenderCaseMatched(senderCase, launch)) {
+      System.out.println("Sender case matched");
       sendNotification(senderCase, launch, launchLink);
     }
   }
@@ -103,6 +107,8 @@ public class SlackLaunchFinishEventListener implements
     Optional<String> webhookUrl = getWebhookUrl(senderCase);
     Optional<String> attachment = resolveAttachment(launch, launchLink);
     if (webhookUrl.isPresent() && attachment.isPresent()) {
+      System.out.println("Webhook URL and attachment are present " + webhookUrl);
+      System.out.println("Attachment is present " + attachment);
       sendSlackNotification(webhookUrl.get(), attachment.get());
     }
   }
@@ -118,6 +124,7 @@ public class SlackLaunchFinishEventListener implements
 
   private void sendSlackNotification(String webhookUrl, String attachment) {
     try (Slack slack = Slack.getInstance()) {
+      System.out.println("Sending Slack notification " + webhookUrl + attachment);
       slack.send(webhookUrl, attachment);
     } catch (Exception e) {
       throw new ReportPortalException("Failed to send Slack notification", e);

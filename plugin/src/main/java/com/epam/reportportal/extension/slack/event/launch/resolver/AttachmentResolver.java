@@ -53,6 +53,7 @@ public class AttachmentResolver {
   }
 
   public Optional<String> resolve(Launch launch, String launchLink) {
+    System.out.println("Resolve attachments");
     return messageTemplateStore.get(SlackEventType.LAUNCH_FINISHED)
         .flatMap(file -> jsonObjectLoader.load(file, JsonNode.class))
         .map(JsonNode::toString)
@@ -78,6 +79,7 @@ public class AttachmentResolver {
     for (Map.Entry<TemplateProperty, String> entry : collect.entrySet()) {
       String key = "${" + entry.getKey().getName() + "}";
       Object value = entry.getValue();
+      System.out.println("Key: " + key + " Value: " + value);
       result = result.replace(key, value != null ? value.toString() : "");
     }
 
