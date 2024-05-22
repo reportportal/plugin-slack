@@ -22,6 +22,8 @@ import java.util.function.Function;
 public class LaunchPropertiesCollector implements
     PropertyCollector<Launch, DefaultTemplateProperty> {
 
+  private static final int FIELD_LENGTH_RESTRICTION = 1970;
+
   public static final Map<DefaultTemplateProperty, Function<Launch, Object>> FIELD_MAPPING = ImmutableMap.<DefaultTemplateProperty, Function<Launch, Object>>builder()
       .put(LAUNCH_ID, Launch::getId)
       .put(LAUNCH_UUID, Launch::getUuid)
@@ -30,7 +32,7 @@ public class LaunchPropertiesCollector implements
       .put(LAUNCH_START_TIME, Launch::getStartTime)
       .put(LAUNCH_FINISH_TIME, Launch::getEndTime)
       .put(LAUNCH_MODE, Launch::getMode)
-      .put(LAUNCH_DESCRIPTION, Launch::getDescription)
+      .put(LAUNCH_DESCRIPTION, launch -> cutString(launch.getDescription()))
       .build();
 
   @Override
@@ -42,5 +44,12 @@ public class LaunchPropertiesCollector implements
                 ofNullable(v.getValue().apply(launch)).map(String::valueOf).orElse("")),
             LinkedHashMap::putAll
         );
+  }
+
+  private static String cutString(String s) {
+    if (s != null && s.length() > FIELD_LENGTH_RESTRICTION) {
+      return s.substring(0, FIELD_LENGTH_RESTRICTION) + "...";
+    }
+    return s;
   }
 }
