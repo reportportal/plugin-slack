@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
@@ -62,7 +63,7 @@ public class AttachmentResolver {
   public String mapLaunchPropertiesToTemplate(Launch launch, String template, String launchLink) {
     String result = template;
     List<PropertyCollector<Launch, ? extends TemplateProperty>> propertyCollectors = propertyCollectorFactory.getDefaultCollectors();
-    Map<TemplateProperty, String> collect = propertyCollectors.stream()
+    Map<TemplateProperty, String> propertyMap = propertyCollectors.stream()
         .map(c -> c.collect(launch))
         .flatMap(m -> m.entrySet().stream())
         .collect(
@@ -72,10 +73,13 @@ public class AttachmentResolver {
             LinkedHashMap::putAll
         );
 
-    collect.put(new TextProperty(LAUNCH_LINK), launchLink);
+    if (StringUtils.isNotEmpty(launchLink)) {
+      propertyMap.put(new TextProperty(LAUNCH_LINK), launchLink);
+    } else {
+      result = result.replace("<${LAUNCH_LINK}|", "").replace(">", "");
+    }
 
-
-    for (Map.Entry<TemplateProperty, String> entry : collect.entrySet()) {
+    for (Map.Entry<TemplateProperty, String> entry : propertyMap.entrySet()) {
       String key = "${" + entry.getKey().getName() + "}";
       Object value = entry.getValue();
       result = result.replace(key, value != null ? value.toString() : "");

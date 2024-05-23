@@ -15,13 +15,17 @@
  */
 package com.epam.reportportal.extension.slack.collector.laucnh;
 
+import static com.epam.ta.reportportal.entity.enums.StatusEnum.FAILED;
+import static com.epam.ta.reportportal.entity.enums.StatusEnum.INTERRUPTED;
 import static com.epam.ta.reportportal.entity.enums.StatusEnum.PASSED;
 
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
-import com.epam.reportportal.extension.slack.model.template.TextProperty;
 import com.epam.reportportal.extension.slack.model.enums.template.Color;
+import com.epam.reportportal.extension.slack.model.template.TextProperty;
+import com.epam.ta.reportportal.entity.enums.StatusEnum;
 import com.epam.ta.reportportal.entity.launch.Launch;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -31,9 +35,23 @@ public class ResultColorCollector implements PropertyCollector<Launch, TextPrope
 
   private static final String RESULT_COLOR = "RESULT_COLOR";
 
+  private final Map<StatusEnum, Color> colorMapping;
+
+  public ResultColorCollector() {
+    this.colorMapping = initMapping();
+  }
+
   @Override
   public Map<TextProperty, String> collect(Launch launch) {
-    String colorValue = (PASSED == launch.getStatus() ? Color.PASSED : Color.FAILED).getValue();
-    return Collections.singletonMap(new TextProperty(RESULT_COLOR), colorValue);
+    Color color = colorMapping.getOrDefault(launch.getStatus(), Color.FAILED);
+    return Collections.singletonMap(new TextProperty(RESULT_COLOR), color.getValue());
+  }
+
+  private Map<StatusEnum, Color> initMapping() {
+    Map<StatusEnum, Color> mapping = new LinkedHashMap<>();
+    mapping.put(PASSED, Color.PASSED);
+    mapping.put(FAILED, Color.FAILED);
+    mapping.put(INTERRUPTED, Color.INTERRUPTED);
+    return mapping;
   }
 }

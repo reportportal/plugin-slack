@@ -21,6 +21,8 @@ package com.epam.reportportal.extension.slack.model.enums.template;
 public enum Color {
 
   PASSED("#008000"),
+
+  INTERRUPTED("#FFA500"),
   FAILED("#FF0000");
 
   private final String value;
