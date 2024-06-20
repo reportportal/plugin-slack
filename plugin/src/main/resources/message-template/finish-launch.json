@@ -56,6 +56,13 @@
           ]
         },
         {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "\n"
+          }
+        },
+        {
           "type": "rich_text",
           "elements": [
             {
@@ -116,6 +123,13 @@
               ]
             }
           ]
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "\n"
+          }
         },
         {
           "type": "rich_text",
