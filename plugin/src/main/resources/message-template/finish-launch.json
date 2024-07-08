@@ -1,6 +1,7 @@
 {
   "attachments": [
     {
+      "color": "${RESULT_COLOR}",
       "blocks": [
         {
           "type": "section",
