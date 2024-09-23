@@ -13,8 +13,8 @@ node {
     version = '20.11.0'
     npmVersion = '10.2.4'
     download = true
-    workDir = file("${project.buildDir}/plugin/ui")
-    nodeModulesDir = file("${project.rootDir}/plugin/ui")
+    workDir = file("${project.buildDir}/plugin-slack/ui")
+    nodeModulesDir = file("${project.rootDir}/plugin-slack/ui")
 }
 
 npm_run_build {
