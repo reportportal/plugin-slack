@@ -26,6 +26,9 @@ npm_run_build {
 }
 
 apply from: 'project-properties.gradle'
+apply from: scriptsUrl + '/release-fat.gradle'
+apply from: scriptsUrl + '/signing.gradle'
+apply from: scriptsUrl + '/build-quality.gradle'
 
 repositories {
     mavenLocal()
