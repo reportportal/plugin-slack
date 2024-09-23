@@ -35,15 +35,21 @@ repositories {
     }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom(releaseMode ? 'com.epam.reportportal:commons-bom:' + getProperty('bom.version') : 'com.epam.reportportal:commons-bom:5.12.1')
+    }
+}
+
 dependencies {
     if (releaseMode) {
         implementation 'com.epam.reportportal:commons-dao'
         implementation 'com.epam.reportportal:plugin-api'
         annotationProcessor 'com.epam.reportportal:plugin-api'
     } else {
-        implementation 'com.github.reportportal:commons-dao:7de2ad1'
-        implementation 'com.github.reportportal:plugin-api:5ffeb06'
-        annotationProcessor 'com.github.reportportal:plugin-api:3ecb915657'
+        implementation 'com.github.reportportal:commons-dao:acf1ec7'
+        implementation 'com.github.reportportal:plugin-api:188792e'
+        annotationProcessor 'com.github.reportportal:plugin-api:188792e'
     }
 
     compile("com.slack.api:slack-api-client:1.27.1") {
