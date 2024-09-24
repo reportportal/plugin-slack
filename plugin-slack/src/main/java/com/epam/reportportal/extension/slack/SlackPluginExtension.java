@@ -54,7 +54,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 @Extension
 public class SlackPluginExtension implements ReportPortalExtensionPoint, DisposableBean {
 
-  private static final String PLUGIN_ID = "Slack";
+  private static final String PLUGIN_ID = "slack";
   public static final String BINARY_DATA_PROPERTIES_FILE_ID = "binary-data.properties";
 
   private static final String DOCUMENTATION_LINK_FIELD = "documentationLink";
