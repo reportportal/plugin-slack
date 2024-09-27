@@ -43,7 +43,7 @@ public class SlackLaunchFinishEventListener implements
 
   private final static String WEBHOOK_DETAILS = "webhookURL";
 
-  private final static String PLUGIN_NOTIFICATION_TYPE = "Slack";
+  private final static String PLUGIN_NOTIFICATION_TYPE = "slack";
 
   private final ProjectRepository projectRepository;
 
