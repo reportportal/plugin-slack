@@ -47,6 +47,7 @@ import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Andrei Piankouski
@@ -101,6 +102,9 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   private ProjectRepository projectRepository;
 
   @Autowired
+  private RestTemplate restTemplate;
+
+  @Autowired
   private ApplicationContext applicationContext;
 
   @Autowired
@@ -131,7 +135,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     launchFinishEventListenerSupplier = new MemoizingSupplier<>(
         () -> new SlackLaunchFinishEventListener(projectRepository,
-            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get()));
+            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate));
   }
 
   @PostConstruct

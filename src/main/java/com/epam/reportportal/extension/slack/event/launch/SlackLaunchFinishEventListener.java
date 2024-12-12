@@ -27,11 +27,11 @@ import com.epam.ta.reportportal.entity.launch.Launch;
 import com.epam.ta.reportportal.entity.project.Project;
 import com.epam.ta.reportportal.entity.project.ProjectUtils;
 import com.epam.ta.reportportal.entity.project.email.SenderCase;
-import com.slack.api.Slack;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.context.ApplicationListener;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
@@ -39,11 +39,11 @@ import org.springframework.context.ApplicationListener;
 public class SlackLaunchFinishEventListener implements
     ApplicationListener<LaunchFinishedPluginEvent> {
 
-  private final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
+  public final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
 
-  private final static String WEBHOOK_DETAILS = "webhookURL";
+  public final static String WEBHOOK_DETAILS = "webhookURL";
 
-  private final static String PLUGIN_NOTIFICATION_TYPE = "slack";
+  public final static String PLUGIN_NOTIFICATION_TYPE = "slack";
 
   private final ProjectRepository projectRepository;
 
@@ -52,15 +52,18 @@ public class SlackLaunchFinishEventListener implements
   private final SenderCaseMatcher senderCaseMatcher;
 
   private final AttachmentResolver attachmentResolver;
+  private final RestTemplate restTemplate;
 
 
   public SlackLaunchFinishEventListener(
       ProjectRepository projectRepository, LaunchRepository launchRepository,
-      SenderCaseMatcher senderCaseMatcher, AttachmentResolver attachmentResolver) {
+      SenderCaseMatcher senderCaseMatcher, AttachmentResolver attachmentResolver,
+      RestTemplate restTemplate) {
     this.projectRepository = projectRepository;
     this.launchRepository = launchRepository;
     this.senderCaseMatcher = senderCaseMatcher;
     this.attachmentResolver = attachmentResolver;
+    this.restTemplate = restTemplate;
   }
 
   @Override
@@ -103,7 +106,7 @@ public class SlackLaunchFinishEventListener implements
     Optional<String> webhookUrl = getWebhookUrl(senderCase);
     Optional<String> attachment = resolveAttachment(launch, launchLink);
     if (webhookUrl.isPresent() && attachment.isPresent()) {
-      sendSlackNotification(webhookUrl.get(), attachment.get());
+      restTemplate.postForLocation(webhookUrl.get(), attachment.get());
     }
   }
 
@@ -116,13 +119,6 @@ public class SlackLaunchFinishEventListener implements
     return attachmentResolver.resolve(launch, launchLink);
   }
 
-  private void sendSlackNotification(String webhookUrl, String attachment) {
-    try (Slack slack = Slack.getInstance()) {
-      slack.send(webhookUrl, attachment);
-    } catch (Exception e) {
-      throw new ReportPortalException("Failed to send Slack notification", e);
-    }
-  }
 
   private boolean isNotificationsEnabled(Project project) {
     Map<String, String> projectConfig = ProjectUtils.getConfigParameters(
