@@ -38,6 +38,8 @@ dependencyManagement {
     }
 }
 
+ext['junit-jupiter.version'] = "${junitVersion}"
+
 dependencies {
     if (releaseMode) {
         implementation 'com.epam.reportportal:commons-dao'
@@ -49,12 +51,19 @@ dependencies {
         annotationProcessor 'com.github.reportportal:plugin-api:develop-SNAPSHOT'
     }
 
-    implementation("com.slack.api:slack-api-client:1.27.1") {
-        exclude group: "org.slf4j"
-    }
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.9'
 }
 
 test {
@@ -115,6 +124,7 @@ shadowJar {
     configurations = [project.configurations.compileClasspath]
     zip64 true
     dependencies {
+        include(dependency('commons-io:commons-io:2.15.1'))
     }
 }
 
