@@ -117,8 +117,8 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   @Autowired
   private ProjectRepository projectRepository;
 
-  @Autowired
-  private RestTemplate restTemplate;
+  // @Autowired // uncomment for future release
+  private final RestTemplate restTemplate = new RestTemplate();
 
   @Autowired
   private ApplicationContext applicationContext;
