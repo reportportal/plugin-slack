@@ -6,9 +6,7 @@ import static java.util.Optional.ofNullable;
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
 import com.epam.reportportal.extension.slack.model.enums.template.DefaultTemplateProperty;
 import com.epam.ta.reportportal.entity.ItemAttribute;
-import com.epam.ta.reportportal.entity.integration.Integration;
 import com.epam.ta.reportportal.entity.launch.Launch;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,11 +15,13 @@ import org.apache.commons.lang3.BooleanUtils;
 
 public class AttributesCollector implements PropertyCollector<Launch, DefaultTemplateProperty> {
 
+  private final static String EMPTY_ATTRIBUTES = "-";
+
   @Override
   public Map<DefaultTemplateProperty, String> collect(Launch launch) {
     return ofNullable(launch.getAttributes()).filter(CollectionUtils::isNotEmpty)
         .map(this::convertToProperties)
-        .orElseGet(Collections::emptyMap);
+        .orElseGet(() -> Map.of(LAUNCH_ATTRIBUTES, EMPTY_ATTRIBUTES));
   }
 
   private Map<DefaultTemplateProperty, String> convertToProperties(Set<ItemAttribute> attributes) {
