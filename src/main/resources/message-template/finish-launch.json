@@ -179,7 +179,7 @@
                 },
                 {
                   "type": "text",
-                  "text": " SISTEM ISSUE GROUP: \t\t${statistics$defects$system_issue$total}\n"
+                  "text": " SYSTEM ISSUE GROUP: \t\t${statistics$defects$system_issue$total}\n"
                 },
                 {
                   "type": "emoji",
