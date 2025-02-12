@@ -5,9 +5,7 @@ import com.epam.reportportal.extension.slack.event.EventHandlerFactory;
 import com.epam.reportportal.extension.slack.event.handler.EventHandler;
 import com.epam.reportportal.extension.slack.event.handler.plugin.PluginLoadedEventHandler;
 import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
-import com.epam.ta.reportportal.dao.IntegrationRepository;
 import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
-
 import java.util.HashMap;
 import java.util.Map;
 
