@@ -57,11 +57,13 @@ import javax.sql.DataSource;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.web.client.RestTemplate;
 
@@ -126,6 +128,10 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   @Autowired
   private DataSource dataSource;
 
+  @Qualifier("eventListenerExecutor")
+  @Autowired
+  private TaskExecutor taskExecutor;
+
   public SlackPluginExtension(Map<String, Object> initParams) {
     resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams)
         .map(String::valueOf).orElse("");
@@ -151,7 +157,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     launchFinishEventListenerSupplier = new MemoizingSupplier<>(
         () -> new SlackLaunchFinishEventListener(projectRepository,
-            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate));
+            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate, taskExecutor));
   }
 
   @PostConstruct

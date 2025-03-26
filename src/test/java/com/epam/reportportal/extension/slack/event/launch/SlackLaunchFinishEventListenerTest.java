@@ -40,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -61,11 +62,14 @@ class SlackLaunchFinishEventListenerTest {
   @Mock
   AttachmentResolver attachmentResolver;
 
+  @Mock
+  TaskExecutor taskExecutor;
+
   @Test
   @Disabled("until RestTemplate initialization in SlackPluginExtension switched to @Autowired")
   void sendNotificationPositive() throws URISyntaxException {
     var slackLaunchFinishEventListener = new SlackLaunchFinishEventListener(projectRepository,
-        launchRepository, senderCaseMatcher, attachmentResolver, restTemplate);
+        launchRepository, senderCaseMatcher, attachmentResolver, restTemplate, taskExecutor);
 
     when(projectRepository.findById(anyLong()))
         .thenReturn(Optional.of(MockData.getProjectSample()));
