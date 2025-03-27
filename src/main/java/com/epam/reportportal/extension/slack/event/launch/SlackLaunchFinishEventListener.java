@@ -33,7 +33,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 /**
