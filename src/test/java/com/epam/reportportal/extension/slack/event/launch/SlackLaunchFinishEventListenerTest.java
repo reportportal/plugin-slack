@@ -62,14 +62,11 @@ class SlackLaunchFinishEventListenerTest {
   @Mock
   AttachmentResolver attachmentResolver;
 
-  @Mock
-  TaskExecutor taskExecutor;
-
   @Test
   @Disabled("until RestTemplate initialization in SlackPluginExtension switched to @Autowired")
   void sendNotificationPositive() throws URISyntaxException {
     var slackLaunchFinishEventListener = new SlackLaunchFinishEventListener(projectRepository,
-        launchRepository, senderCaseMatcher, attachmentResolver, restTemplate, taskExecutor);
+        launchRepository, senderCaseMatcher, attachmentResolver, restTemplate);
 
     when(projectRepository.findById(anyLong()))
         .thenReturn(Optional.of(MockData.getProjectSample()));

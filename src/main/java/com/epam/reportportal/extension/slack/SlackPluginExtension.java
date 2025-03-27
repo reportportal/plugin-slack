@@ -128,10 +128,6 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   @Autowired
   private DataSource dataSource;
 
-  @Qualifier("eventListenerExecutor")
-  @Autowired
-  private TaskExecutor taskExecutor;
-
   public SlackPluginExtension(Map<String, Object> initParams) {
     resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams)
         .map(String::valueOf).orElse("");
@@ -157,7 +153,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
     launchFinishEventListenerSupplier = new MemoizingSupplier<>(
         () -> new SlackLaunchFinishEventListener(projectRepository,
-            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate, taskExecutor));
+            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate));
   }
 
   @PostConstruct
