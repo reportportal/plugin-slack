@@ -1,9 +1,9 @@
 package com.epam.reportportal.extension.slack.utils;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Andrei Piankouski

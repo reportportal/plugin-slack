@@ -43,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import org.pf4j.Extension;
 import org.springframework.beans.factory.DisposableBean;
@@ -79,6 +79,10 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   private static final String DOCUMENTATION_LINK = "https://reportportal.io/docs/plugins/Slack";
 
   public static final String SCRIPTS_DIR = "scripts";
+
+  private static final String NAME_FIELD = "name";
+
+  private static final String PLUGIN_NAME = "Slack";
 
   private final ObjectMapper objectMapper;
 
@@ -196,6 +200,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   @Override
   public Map<String, ?> getPluginParams() {
     Map<String, Object> params = new HashMap<>();
+    params.put(NAME_FIELD, PLUGIN_NAME);
     params.put(ALLOWED_COMMANDS, new ArrayList<>(pluginCommandMapping.get().keySet()));
     params.put(DOCUMENTATION_LINK_FIELD, DOCUMENTATION_LINK);
     params.put(COMMON_COMMANDS, new ArrayList<>(commonPluginCommandMapping.get().keySet()));

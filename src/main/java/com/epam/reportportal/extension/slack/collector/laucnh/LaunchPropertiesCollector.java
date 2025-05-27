@@ -12,7 +12,6 @@ import static java.util.Optional.ofNullable;
 
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
 import com.epam.reportportal.extension.slack.model.enums.template.DefaultTemplateProperty;
-import com.epam.ta.reportportal.entity.integration.Integration;
 import com.epam.ta.reportportal.entity.launch.Launch;
 import com.google.common.collect.ImmutableMap;
 import java.util.LinkedHashMap;
