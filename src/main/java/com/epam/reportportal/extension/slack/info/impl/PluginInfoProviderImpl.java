@@ -102,7 +102,7 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
 		ruleField.put("required", true);
     Map<String, Object> validation = new HashMap<>();
     validation.put("type", "url");
-    validation.put("regex", "^https:\\/\\/hooks\\.slack\\.com\\/services\\/T[A-Z0-9]{8,10}\\/B[A-Z0-9]{10}\\/[a-zA-Z0-9]{24}$");
+    validation.put("regex", "^https:\\/\\/hooks\\.slack\\.com\\/services\\/T[A-Z0-9]{8,12}\\/B[A-Z0-9]{8,12}\\/[a-zA-Z0-9]{24}$");
     validation.put("errorMessage", "Field is Required. Please provide valid URL");
     ruleField.put("validation", validation);
     details.put(FIELDS_KEY, List.of(ruleField));
