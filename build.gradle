@@ -33,24 +33,16 @@ repositories {
     }
 }
 
-dependencyManagement {
-    imports {
-        mavenBom(releaseMode ? 'com.epam.reportportal:commons-bom:' + getProperty('bom.version') : 'com.epam.reportportal:commons-bom:5.12.1')
-    }
-}
-
 ext['spring-boot.version'] = "${springBootVersion}"
 ext['junit-jupiter.version'] = "${junitVersion}"
 
 dependencies {
     if (releaseMode) {
-        implementation 'com.epam.reportportal:commons-dao'
-        implementation 'com.epam.reportportal:plugin-api'
-        annotationProcessor 'com.epam.reportportal:plugin-api'
+        implementation 'com.epam.reportportal:service-api'
+        annotationProcessor 'com.epam.reportportal:service-api'
     } else {
-        implementation 'com.github.reportportal:commons-dao:develop-SNAPSHOT'
-        implementation 'com.github.reportportal:plugin-api:develop-SNAPSHOT'
-        annotationProcessor 'com.github.reportportal:plugin-api:develop-SNAPSHOT'
+        implementation 'com.github.reportportal:service-api:3e34a90'
+        annotationProcessor 'com.github.reportportal:service-api:3e34a90'
     }
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -58,7 +50,6 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
     testImplementation 'org.mockito:mockito-core:5.14.2'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
     testImplementation "org.junit.jupiter:junit-jupiter"
