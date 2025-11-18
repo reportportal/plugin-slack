@@ -3,10 +3,10 @@ package com.epam.reportportal.extension.slack.info.impl;
 import static java.util.Optional.ofNullable;
 
 import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
-import com.epam.reportportal.rules.exception.ErrorType;
-import com.epam.reportportal.rules.exception.ReportPortalException;
-import com.epam.ta.reportportal.entity.enums.IntegrationGroupEnum;
-import com.epam.ta.reportportal.entity.integration.IntegrationType;
+import com.epam.reportportal.infrastructure.persistence.entity.enums.IntegrationGroupEnum;
+import com.epam.reportportal.infrastructure.persistence.entity.integration.IntegrationType;
+import com.epam.reportportal.infrastructure.rules.exception.ErrorType;
+import com.epam.reportportal.infrastructure.rules.exception.ReportPortalException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -99,10 +99,11 @@ public class PluginInfoProviderImpl implements PluginInfoProvider {
     ruleField.put("label", "Webhook URL");
     ruleField.put("type", "text");
     ruleField.put("placeholder", "https://...");
-		ruleField.put("required", true);
+    ruleField.put("required", true);
     Map<String, Object> validation = new HashMap<>();
     validation.put("type", "url");
-    validation.put("regex", "^https:\\/\\/hooks\\.slack\\.com\\/services\\/T[A-Z0-9]{8,12}\\/B[A-Z0-9]{8,12}\\/[a-zA-Z0-9]{24}$");
+    validation.put("regex",
+        "^https:\\/\\/hooks\\.slack\\.com\\/services\\/T[A-Z0-9]{8,12}\\/B[A-Z0-9]{8,12}\\/[a-zA-Z0-9]{24}$");
     validation.put("errorMessage", "Field is Required. Please provide valid URL");
     ruleField.put("validation", validation);
     details.put(FIELDS_KEY, List.of(ruleField));

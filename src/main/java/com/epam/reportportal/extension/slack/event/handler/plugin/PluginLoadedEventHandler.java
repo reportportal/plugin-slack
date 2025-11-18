@@ -3,7 +3,7 @@ package com.epam.reportportal.extension.slack.event.handler.plugin;
 import com.epam.reportportal.extension.event.PluginEvent;
 import com.epam.reportportal.extension.slack.event.handler.EventHandler;
 import com.epam.reportportal.extension.slack.info.PluginInfoProvider;
-import com.epam.ta.reportportal.dao.IntegrationTypeRepository;
+import com.epam.reportportal.infrastructure.persistence.dao.IntegrationTypeRepository;
 
 /**
  * @author Andrei Piankouski

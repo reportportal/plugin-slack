@@ -15,15 +15,15 @@
  */
 package com.epam.reportportal.extension.slack.collector.laucnh;
 
-import static com.epam.ta.reportportal.entity.enums.StatusEnum.FAILED;
-import static com.epam.ta.reportportal.entity.enums.StatusEnum.INTERRUPTED;
-import static com.epam.ta.reportportal.entity.enums.StatusEnum.PASSED;
+import static com.epam.reportportal.infrastructure.persistence.entity.enums.StatusEnum.FAILED;
+import static com.epam.reportportal.infrastructure.persistence.entity.enums.StatusEnum.INTERRUPTED;
+import static com.epam.reportportal.infrastructure.persistence.entity.enums.StatusEnum.PASSED;
 
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
 import com.epam.reportportal.extension.slack.model.enums.template.Color;
 import com.epam.reportportal.extension.slack.model.template.TextProperty;
-import com.epam.ta.reportportal.entity.enums.StatusEnum;
-import com.epam.ta.reportportal.entity.launch.Launch;
+import com.epam.reportportal.infrastructure.persistence.entity.enums.StatusEnum;
+import com.epam.reportportal.infrastructure.persistence.entity.launch.Launch;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
