@@ -75,7 +75,7 @@ public class SlackLaunchFinishEventListener implements
     try {
       Project project = getProject(event.getProjectId());
       if (isNotificationsEnabled(project)) {
-        Launch launch = getLaunch(event.getSource());
+        Launch launch = getLaunch(event.getLaunchId());
         processSenderCases(project, launch, event.getLaunchLink());
       }
     } catch (Exception e) {
