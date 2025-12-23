@@ -16,12 +16,12 @@
 
 package com.epam.reportportal.extension.slack;
 
+import com.epam.reportportal.core.events.domain.PluginUploadedEvent;
 import com.epam.reportportal.extension.CommonPluginCommand;
 import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
 import com.epam.reportportal.extension.common.IntegrationTypeProperties;
-import com.epam.reportportal.core.events.domain.PluginUploadedEvent;
-import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
+import com.epam.reportportal.extension.event.LaunchFinishedNotificationEvent;
 import com.epam.reportportal.extension.slack.binary.JsonObjectLoader;
 import com.epam.reportportal.extension.slack.binary.MessageTemplateStore;
 import com.epam.reportportal.extension.slack.event.launch.SlackLaunchFinishEventListener;
@@ -96,7 +96,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
   private final Supplier<ApplicationListener<PluginUploadedEvent>> pluginLoadedListener;
 
-  private final Supplier<ApplicationListener<LaunchFinishedPluginEvent>> launchFinishEventListenerSupplier;
+  private final Supplier<ApplicationListener<LaunchFinishedNotificationEvent>> launchFinishedNotificationEventListenerSupplier;
 
   private final Supplier<MessageTemplateStore> messageTemplateStoreSupplier;
 
@@ -146,9 +146,10 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     attachmentResolverSupplier = new MemoizingSupplier<>(() -> new AttachmentResolver(
         jsonObjectLoader, messageTemplateStoreSupplier.get(), new PropertyCollectorFactory()));
 
-    launchFinishEventListenerSupplier = new MemoizingSupplier<>(
+    launchFinishedNotificationEventListenerSupplier = new MemoizingSupplier<>(
         () -> new SlackLaunchFinishEventListener(projectRepository,
-            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restTemplate));
+            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(),
+            restTemplate));
   }
 
   @PostConstruct
@@ -163,7 +164,8 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
         ApplicationEventMulticaster.class
     );
     applicationEventMulticaster.addApplicationListener(pluginLoadedListener.get());
-    applicationEventMulticaster.addApplicationListener(launchFinishEventListenerSupplier.get());
+    applicationEventMulticaster.addApplicationListener(
+        launchFinishedNotificationEventListenerSupplier.get());
   }
 
   private void initScripts() throws IOException {
@@ -187,7 +189,8 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
         ApplicationEventMulticaster.class
     );
     applicationEventMulticaster.removeApplicationListener(pluginLoadedListener.get());
-    applicationEventMulticaster.removeApplicationListener(launchFinishEventListenerSupplier.get());
+    applicationEventMulticaster.removeApplicationListener(
+        launchFinishedNotificationEventListenerSupplier.get());
   }
 
   @Override
