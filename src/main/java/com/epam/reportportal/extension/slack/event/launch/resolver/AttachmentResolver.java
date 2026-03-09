@@ -24,7 +24,7 @@ import com.epam.reportportal.extension.slack.factory.PropertyCollectorFactory;
 import com.epam.reportportal.extension.slack.model.enums.SlackEventType;
 import com.epam.reportportal.extension.slack.model.template.TemplateProperty;
 import com.epam.reportportal.extension.slack.model.template.TextProperty;
-import com.epam.reportportal.infrastructure.persistence.entity.launch.Launch;
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
