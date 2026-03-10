@@ -6,7 +6,7 @@ import com.epam.reportportal.extension.slack.collector.laucnh.LaunchPropertiesCo
 import com.epam.reportportal.extension.slack.collector.laucnh.ResultColorCollector;
 import com.epam.reportportal.extension.slack.collector.laucnh.StatisticsPropertiesCollector;
 import com.epam.reportportal.extension.slack.model.template.TemplateProperty;
-import com.epam.reportportal.infrastructure.persistence.entity.launch.Launch;
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
 import java.util.List;
 
 public class PropertyCollectorFactory {
