@@ -3,10 +3,10 @@ package com.epam.reportportal.extension.slack.collector.laucnh;
 import static com.epam.reportportal.extension.slack.model.enums.template.DefaultTemplateProperty.LAUNCH_ATTRIBUTES;
 import static java.util.Optional.ofNullable;
 
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.LaunchAttribute;
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
 import com.epam.reportportal.extension.slack.model.enums.template.DefaultTemplateProperty;
-import com.epam.reportportal.base.infrastructure.persistence.entity.ItemAttribute;
-import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +24,8 @@ public class AttributesCollector implements PropertyCollector<Launch, DefaultTem
         .orElseGet(() -> Map.of(LAUNCH_ATTRIBUTES, EMPTY_ATTRIBUTES));
   }
 
-  private Map<DefaultTemplateProperty, String> convertToProperties(Set<ItemAttribute> attributes) {
+  private Map<DefaultTemplateProperty, String> convertToProperties(
+      Set<LaunchAttribute> attributes) {
     final String attributesString = attributes.stream()
         .filter(a -> BooleanUtils.isFalse(a.isSystem()))
         .map(a -> {
