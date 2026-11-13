@@ -17,6 +17,7 @@ package com.epam.reportportal.extension.slack.event.launch.resolver;
 
 import static java.util.Optional.ofNullable;
 
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
 import com.epam.reportportal.extension.slack.binary.JsonObjectLoader;
 import com.epam.reportportal.extension.slack.binary.MessageTemplateStore;
 import com.epam.reportportal.extension.slack.collector.PropertyCollector;
@@ -24,13 +25,12 @@ import com.epam.reportportal.extension.slack.factory.PropertyCollectorFactory;
 import com.epam.reportportal.extension.slack.model.enums.SlackEventType;
 import com.epam.reportportal.extension.slack.model.template.TemplateProperty;
 import com.epam.reportportal.extension.slack.model.template.TextProperty;
-import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import tools.jackson.databind.JsonNode;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>

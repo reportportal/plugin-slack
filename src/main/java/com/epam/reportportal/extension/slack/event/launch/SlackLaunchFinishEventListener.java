@@ -15,9 +15,6 @@
  */
 package com.epam.reportportal.extension.slack.event.launch;
 
-import com.epam.reportportal.extension.event.LaunchFinishedNotificationEvent;
-import com.epam.reportportal.extension.slack.event.launch.resolver.AttachmentResolver;
-import com.epam.reportportal.extension.slack.event.launch.resolver.SenderCaseMatcher;
 import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
 import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
 import com.epam.reportportal.base.infrastructure.persistence.entity.enums.ProjectAttributeEnum;
@@ -27,13 +24,16 @@ import com.epam.reportportal.base.infrastructure.persistence.entity.project.Proj
 import com.epam.reportportal.base.infrastructure.persistence.entity.project.email.SenderCase;
 import com.epam.reportportal.base.infrastructure.rules.exception.ErrorType;
 import com.epam.reportportal.base.infrastructure.rules.exception.ReportPortalException;
+import com.epam.reportportal.extension.event.LaunchFinishedNotificationEvent;
+import com.epam.reportportal.extension.slack.event.launch.resolver.AttachmentResolver;
+import com.epam.reportportal.extension.slack.event.launch.resolver.SenderCaseMatcher;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 /**
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
@@ -57,18 +57,18 @@ public class SlackLaunchFinishEventListener implements
   private final SenderCaseMatcher senderCaseMatcher;
 
   private final AttachmentResolver attachmentResolver;
-  private final RestTemplate restTemplate;
+  private final RestClient restClient;
 
 
   public SlackLaunchFinishEventListener(
       ProjectRepository projectRepository, LaunchRepository launchRepository,
       SenderCaseMatcher senderCaseMatcher, AttachmentResolver attachmentResolver,
-      RestTemplate restTemplate) {
+      RestClient restClient) {
     this.projectRepository = projectRepository;
     this.launchRepository = launchRepository;
     this.senderCaseMatcher = senderCaseMatcher;
     this.attachmentResolver = attachmentResolver;
-    this.restTemplate = restTemplate;
+    this.restClient = restClient;
   }
 
   @Override
@@ -115,7 +115,11 @@ public class SlackLaunchFinishEventListener implements
     Optional<String> webhookUrl = getWebhookUrl(senderCase);
     Optional<String> attachment = resolveAttachment(launch, launchLink);
     if (webhookUrl.isPresent() && attachment.isPresent()) {
-      restTemplate.postForLocation(webhookUrl.get(), attachment.get());
+      restClient.post()
+          .uri(webhookUrl.get())
+          .body(attachment.get())
+          .retrieve()
+          .toBodilessEntity();
     }
   }
 

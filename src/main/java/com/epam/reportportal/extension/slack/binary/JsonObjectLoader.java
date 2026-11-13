@@ -1,27 +1,26 @@
 package com.epam.reportportal.extension.slack.binary;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 public class JsonObjectLoader {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonObjectLoader.class);
 
-  private final ObjectMapper objectMapper;
+  private final JsonMapper jsonMapper;
 
-  public JsonObjectLoader(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
+  public JsonObjectLoader(JsonMapper jsonMapper) {
+    this.jsonMapper = jsonMapper;
   }
 
   public <T> Optional<T> load(File file, Class<T> clazz) {
     try {
-      return Optional.ofNullable(objectMapper.readValue(FileUtils.openInputStream(file), clazz));
-    } catch (IOException e) {
+      return Optional.ofNullable(jsonMapper.readValue(file, clazz));
+    } catch (JacksonException e) {
       LOGGER.error(e.getMessage(), e);
       return Optional.empty();
     }
