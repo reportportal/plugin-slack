@@ -41,8 +41,8 @@ ext['junit-jupiter.version'] = "${junitVersion}"
 
 dependencies {
     if (releaseMode) {
-        implementation 'com.epam.reportportal:service-api'
-        annotationProcessor 'com.epam.reportportal:service-api'
+        implementation "com.epam.reportportal:service-api:${serviceApiVersion}"
+        annotationProcessor "com.epam.reportportal:service-api:${serviceApiVersion}"
     } else {
         implementation 'com.github.reportportal:service-api:73c327819e'
         annotationProcessor 'com.github.reportportal:service-api:73c327819e'
