@@ -15,18 +15,18 @@
  */
 package com.epam.reportportal.extension.slack.event.launch;
 
-import com.epam.reportportal.extension.event.LaunchFinishedPluginEvent;
+import com.epam.reportportal.extension.event.LaunchFinishedNotificationEvent;
 import com.epam.reportportal.extension.slack.event.launch.resolver.AttachmentResolver;
 import com.epam.reportportal.extension.slack.event.launch.resolver.SenderCaseMatcher;
-import com.epam.reportportal.rules.exception.ErrorType;
-import com.epam.reportportal.rules.exception.ReportPortalException;
-import com.epam.ta.reportportal.dao.LaunchRepository;
-import com.epam.ta.reportportal.dao.ProjectRepository;
-import com.epam.ta.reportportal.entity.enums.ProjectAttributeEnum;
-import com.epam.ta.reportportal.entity.launch.Launch;
-import com.epam.ta.reportportal.entity.project.Project;
-import com.epam.ta.reportportal.entity.project.ProjectUtils;
-import com.epam.ta.reportportal.entity.project.email.SenderCase;
+import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
+import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
+import com.epam.reportportal.base.infrastructure.persistence.entity.enums.ProjectAttributeEnum;
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
+import com.epam.reportportal.base.infrastructure.persistence.entity.project.Project;
+import com.epam.reportportal.base.infrastructure.persistence.entity.project.ProjectUtils;
+import com.epam.reportportal.base.infrastructure.persistence.entity.project.email.SenderCase;
+import com.epam.reportportal.base.infrastructure.rules.exception.ErrorType;
+import com.epam.reportportal.base.infrastructure.rules.exception.ReportPortalException;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
@@ -39,9 +39,10 @@ import org.springframework.web.client.RestTemplate;
  * @author <a href="mailto:andrei_piankouski@epam.com">Andrei Piankouski</a>
  */
 public class SlackLaunchFinishEventListener implements
-    ApplicationListener<LaunchFinishedPluginEvent> {
+    ApplicationListener<LaunchFinishedNotificationEvent> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SlackLaunchFinishEventListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      SlackLaunchFinishEventListener.class);
 
   public final static String SLACK_NOTIFICATION_ATTRIBUTE = "notifications.slack.enabled";
 
@@ -71,11 +72,11 @@ public class SlackLaunchFinishEventListener implements
   }
 
   @Override
-  public void onApplicationEvent(LaunchFinishedPluginEvent event) {
+  public void onApplicationEvent(LaunchFinishedNotificationEvent event) {
     try {
       Project project = getProject(event.getProjectId());
       if (isNotificationsEnabled(project)) {
-        Launch launch = getLaunch(event.getSource());
+        Launch launch = getLaunch(event.getLaunchId());
         processSenderCases(project, launch, event.getLaunchLink());
       }
     } catch (Exception e) {
