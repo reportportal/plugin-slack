@@ -18,6 +18,9 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -44,3 +47,10 @@ jobs:
           ./gradlew release -PreleaseMode -Pscripts.version=${{env.SCRIPTS_VERSION}} \
           -PgithubUserName=${{env.GH_USER_NAME}} -PgithubToken=${{secrets.GITHUB_TOKEN}} \
           -PgpgPassphrase=${{secrets.GPG_PASSPHRASE}} -PgpgPrivateKey="${{secrets.GPG_PRIVATE_KEY}}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(awk -F= '/^version=/{print $2; exit}' gradle.properties | tr -d '[:space:]')
+          gh release create "$VERSION" --title "Release $VERSION" --generate-notes
