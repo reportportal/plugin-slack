@@ -17,6 +17,10 @@
 package com.epam.reportportal.extension.slack;
 
 import com.epam.reportportal.base.core.events.domain.PluginUploadedEvent;
+import com.epam.reportportal.base.infrastructure.persistence.dao.IntegrationTypeRepository;
+import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
+import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
+import com.epam.reportportal.base.infrastructure.persistence.dao.TestItemRepository;
 import com.epam.reportportal.extension.CommonPluginCommand;
 import com.epam.reportportal.extension.PluginCommand;
 import com.epam.reportportal.extension.ReportPortalExtensionPoint;
@@ -31,16 +35,6 @@ import com.epam.reportportal.extension.slack.event.plugin.PluginLoadedEventHandl
 import com.epam.reportportal.extension.slack.factory.PropertyCollectorFactory;
 import com.epam.reportportal.extension.slack.info.impl.PluginInfoProviderImpl;
 import com.epam.reportportal.extension.slack.utils.MemoizingSupplier;
-import com.epam.reportportal.base.infrastructure.persistence.dao.IntegrationTypeRepository;
-import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
-import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
-import com.epam.reportportal.base.infrastructure.persistence.dao.TestItemRepository;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -61,7 +55,8 @@ import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author Andrei Piankouski
@@ -82,15 +77,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
 
   private static final String PLUGIN_NAME = "Slack";
 
-  private final ObjectMapper objectMapper;
-
-  private final JsonObjectLoader jsonObjectLoader;
-
-  private final Supplier<Map<String, PluginCommand>> pluginCommandMapping = new MemoizingSupplier<>(
-      this::getCommands);
-
-  private final Supplier<Map<String, CommonPluginCommand<?>>> commonPluginCommandMapping = new MemoizingSupplier<>(
-      this::getCommonCommands);
+  private final Supplier<JsonObjectLoader> jsonObjectLoaderSupplier;
 
   private final String resourcesDir;
 
@@ -116,8 +103,10 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   @Autowired
   private ProjectRepository projectRepository;
 
-  // @Autowired // uncomment for future release
-  private final RestTemplate restTemplate = new RestTemplate();
+  @Autowired
+  private JsonMapper jsonMapper;
+
+  private final RestClient restClient = RestClient.create();
 
   @Autowired
   private ApplicationContext applicationContext;
@@ -129,9 +118,7 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     resourcesDir = IntegrationTypeProperties.RESOURCES_DIRECTORY.getValue(initParams)
         .map(String::valueOf).orElse("");
 
-    objectMapper = configureObjectMapper();
-
-    jsonObjectLoader = new JsonObjectLoader(objectMapper);
+    jsonObjectLoaderSupplier = new MemoizingSupplier<>(() -> new JsonObjectLoader(jsonMapper));
 
     messageTemplateStoreSupplier = new MemoizingSupplier<>(
         () -> new MessageTemplateStore(resourcesDir));
@@ -144,12 +131,11 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
     senderCaseMatcher = new MemoizingSupplier<>(() -> new SenderCaseMatcher(testItemRepository));
 
     attachmentResolverSupplier = new MemoizingSupplier<>(() -> new AttachmentResolver(
-        jsonObjectLoader, messageTemplateStoreSupplier.get(), new PropertyCollectorFactory()));
+        jsonObjectLoaderSupplier.get(), messageTemplateStoreSupplier.get(), new PropertyCollectorFactory()));
 
     launchFinishedNotificationEventListenerSupplier = new MemoizingSupplier<>(
         () -> new SlackLaunchFinishEventListener(projectRepository,
-            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(),
-            restTemplate));
+            launchRepository, senderCaseMatcher.get(), attachmentResolverSupplier.get(), restClient));
   }
 
   @PostConstruct
@@ -197,39 +183,22 @@ public class SlackPluginExtension implements ReportPortalExtensionPoint, Disposa
   public Map<String, ?> getPluginParams() {
     Map<String, Object> params = new HashMap<>();
     params.put(NAME_FIELD, PLUGIN_NAME);
-    params.put(ALLOWED_COMMANDS, new ArrayList<>(pluginCommandMapping.get().keySet()));
+    params.put(ALLOWED_COMMANDS, new ArrayList<>());
     params.put(DOCUMENTATION_LINK_FIELD, DOCUMENTATION_LINK);
-    params.put(COMMON_COMMANDS, new ArrayList<>(commonPluginCommandMapping.get().keySet()));
+    params.put(COMMON_COMMANDS, new ArrayList<>());
     return params;
   }
 
+  // TODO: remove once service-api drops the deprecated abstract methods in ReportPortalExtensionPoint
+  @Deprecated
   @Override
   public CommonPluginCommand getCommonCommand(String commandName) {
-    return commonPluginCommandMapping.get().get(commandName);
+    return null;
   }
 
+  @Deprecated
   @Override
   public PluginCommand getIntegrationCommand(String commandName) {
-    return pluginCommandMapping.get().get(commandName);
-  }
-
-  private Map<String, PluginCommand> getCommands() {
-    HashMap<String, PluginCommand> pluginCommands = new HashMap<>();
-    return pluginCommands;
-  }
-
-  private Map<String, CommonPluginCommand<?>> getCommonCommands() {
-    HashMap<String, CommonPluginCommand<?>> pluginCommands = new HashMap<>();
-    return pluginCommands;
-  }
-
-  protected ObjectMapper configureObjectMapper() {
-    ObjectMapper om = new ObjectMapper();
-    om.setAnnotationIntrospector(new JacksonAnnotationIntrospector());
-    om.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
-    om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    om.registerModule(new JavaTimeModule());
-    om.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-    return om;
+    return null;
   }
 }

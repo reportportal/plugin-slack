@@ -24,15 +24,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
+import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
+import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
 import com.epam.reportportal.extension.event.LaunchFinishedNotificationEvent;
 import com.epam.reportportal.extension.slack.event.launch.resolver.AttachmentResolver;
 import com.epam.reportportal.extension.slack.event.launch.resolver.SenderCaseMatcher;
 import com.epam.reportportal.extension.slack.utils.MockData;
-import com.epam.reportportal.base.infrastructure.persistence.dao.LaunchRepository;
-import com.epam.reportportal.base.infrastructure.persistence.dao.ProjectRepository;
-import com.epam.reportportal.base.infrastructure.persistence.entity.launch.Launch;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClient;
 
 /**
  * @author <a href="mailto:siarhei_hrabko@epam.com">Siarhei Hrabko</a>
@@ -50,8 +49,8 @@ class SlackLaunchFinishEventListenerTest {
 
   private static final String LAUNCH_LINK = "http://localhost:8080/ui/#admin123/launches/all/55";
 
-  @Mock
-  RestTemplate restTemplate;// = new RestTemplate();
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  RestClient restClient;
   @Mock
   ProjectRepository projectRepository;
   @Mock
@@ -62,10 +61,10 @@ class SlackLaunchFinishEventListenerTest {
   AttachmentResolver attachmentResolver;
 
   @Test
-  @Disabled("until RestTemplate initialization in SlackPluginExtension switched to @Autowired")
-  void sendNotificationPositive() throws URISyntaxException {
+  @Disabled("until RestClient initialization in SlackPluginExtension switched to @Autowired")
+  void sendNotificationPositive() {
     var slackLaunchFinishEventListener = new SlackLaunchFinishEventListener(projectRepository,
-        launchRepository, senderCaseMatcher, attachmentResolver, restTemplate);
+        launchRepository, senderCaseMatcher, attachmentResolver, restClient);
 
     when(projectRepository.findById(anyLong()))
         .thenReturn(Optional.of(MockData.getProjectSample()));
@@ -73,13 +72,13 @@ class SlackLaunchFinishEventListenerTest {
         .thenReturn(Optional.of(MockData.getLaunch()));
     when(attachmentResolver.resolve(any(Launch.class), anyString()))
         .thenReturn(Optional.of(SAMPLE_ATTACHMENT));
-    when(restTemplate.postForLocation(anyString(), anyString()))
-        .thenReturn(new URI("http://localhost:8080"));
+    when(restClient.post().uri(anyString()).body(anyString()).retrieve().toBodilessEntity())
+        .thenReturn(ResponseEntity.ok().build());
 
     slackLaunchFinishEventListener.onApplicationEvent(
         new LaunchFinishedNotificationEvent(1L, 10L, LAUNCH_LINK));
 
-    verify(restTemplate, times(1)).postForLocation(anyString(), anyString());
+    verify(restClient, times(1)).post();
 
   }
 }
